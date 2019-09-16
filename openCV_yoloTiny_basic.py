@@ -1,3 +1,5 @@
+# how to run?   
+# you need these 3 files : yolov3-tiny.cfg, coco.names, yolov3-tiny.weights
 
 import cv2
 import numpy as np
