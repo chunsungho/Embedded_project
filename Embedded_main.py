@@ -8,6 +8,7 @@ import time
 import datetime
 import pygame
 
+
 class Embedded_yolo:
     def __init__(self):
         # Loading camera
@@ -58,16 +59,14 @@ class Embedded_yolo:
                 self.sound.set_volume(self.audio_volume)
                 self.timeSirenStart = datetime.datetime.now()
                 self.FlagSiren = 1
+                import Server_notification
+                # mcu로 모터조절용 메시지 전송
+                self.transmit2cortex('a')
 
             from tkinter import messagebox
-            #messagebox.showwarning("긴급상황", "범죄가 발생하였습니다.")
-
-            # 시리얼통신
-            # 'a'를 보내면 코어텍스(부저) 쪽에서는 동작해야함
+            messagebox.showwarning("긴급상황", "범죄가 발생하였습니다.")
 
             self.cnt = 0
-
-
 
     def Loop_main(self):
         while True:
@@ -94,7 +93,6 @@ class Embedded_yolo:
                         center_x = int(detection[0] * width)
                         center_y = int(detection[1] * height)
 
-
                         # print(class_id, center_x , center_y)
                         w = int(detection[2] * width)  # width of object
                         h = int(detection[3] * height)
@@ -109,7 +107,6 @@ class Embedded_yolo:
                             print(self.cnt)
             indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.4, 0.3)  # NMS 알고리즘(한 물체를 두개의 물체로 인식하면 이거 조정하면 돼)
 
-
             for i in range(len(boxes)):
                 if i in indexes:
                     x, y, w, h = boxes[i]
@@ -121,13 +118,9 @@ class Embedded_yolo:
                     cv2.putText(frame, label + " " + str(round(confidence, 2)), (x, y + 30), self.font, 3, (255, 255, 255),
                                 3)
 
-                    # 시리얼통신
-                    # ser.write(bytes('h', encoding='ascii'))  # 출력방식1
-
             elapsed_time = time.time() - self.starting_time
             fps = self.frame_id / elapsed_time
             cv2.putText(frame, "FPS: " + str(round(fps, 2)), (10, 50), self.font, 3, (0, 0, 0), 3)
-
 
             cv2.imshow("Image", frame)
 
